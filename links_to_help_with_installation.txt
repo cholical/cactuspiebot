@@ -1,0 +1,14 @@
+Zerorpc:
+http://www.zerorpc.io/
+
+General tutorial
+https://ianhinsdale.com/post/communicating-between-nodejs-and-python/
+
+How to install ZeroMQ on Ubuntu (a depency for zerorpc)
+https://tuananh.org/2015/06/16/how-to-install-zeromq-on-ubuntu/
+
+Error: Could not locate the bindings file
+https://github.com/libxmljs/libxmljs/issues/253
+
+USE 127.0.0.1 INSTEAD OF LOCALHOST!!!!
+

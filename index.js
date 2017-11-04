@@ -8,7 +8,7 @@ var bot = new Discord.Client({
 	autorun: true
 });
 
-var host = "localhost";
+var host = "127.0.0.1";
 var port = 8000;
 var client = new zerorpc.Client();
 client.connect("tcp://" + host + ":" + port);
