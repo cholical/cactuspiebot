@@ -1,11 +1,17 @@
 var Discord = require('discord.io');
 var request = require('request');
 var auth = require('./auth.json');
+var zerorpc = require("zerorpc");
 
 var bot = new Discord.Client({
 	token: auth.token,
 	autorun: true
 });
+
+var host = "localhost";
+var port = 8000;
+var client = new zerorpc.Client();
+client.connect("tcp://" + host + ":" + port);
 
 bot.on('ready', function (event) {
 	console.log('Connected');
@@ -20,11 +26,17 @@ bot.on('message', function (user, userID, channelID, message, event) {
 		var cmd = args[0];
 		switch (cmd) {
 			case 'test':
-				bot.sendMessage({
-					to: channelID,
-					message: 'It works!'
+
+				//invokes the function hello with the param "RPC" on the python server
+				client.invoke("hello", "RPC", function(error, res, more) {
+					console.log(res);
+					bot.sendMessage({
+						to: channelID,
+						message: 'It works!' + res
+					});
 				});
-			break;
+
+				break;
 		}
 	}
 });
