@@ -1,0 +1,15 @@
+{
+  "name": "cactuspiebot",
+  "version": "1.0.0",
+  "description": "This is the repository for the CactusPie Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ronald and Mac",
+  "license": "ISC",
+  "dependencies": {
+    "discord.io": "^2.5.3",
+    "lodash": "^4.17.4"
+  }
+}
