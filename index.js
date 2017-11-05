@@ -8,7 +8,7 @@ var zerorpc = require("zerorpc");
 
 var discordApi = 'https://discordapp.com/api/';
 
-var channels = [110114161098248192, 220307845483069440];
+var channels = ["220307845483069440", "110114161098248192"];
 
 var bot = new Discord.Client({
     token: auth.token,
@@ -73,7 +73,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
                     console.log(res);
                     bot.sendMessage({
                         to: channelID,
-                        message: 'It works!' + res
+                        message: 'It works!' + res + ' ChannelID' + channelID
                     });
                 });
 
