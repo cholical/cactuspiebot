@@ -1,8 +1,0 @@
-<@!127535721857679362>, *You have left your chess game!*
-<@!155893986605793281>, ❗️ *Player(s) already on party*
-```!ch party leave```
-
-<@!127535721857679362>, *You have left your chess game!*
-<@!127535721857679362>, help is on the way :mailbox:
-
-<@!71716577669550080>, help is on the way :mailbox:
