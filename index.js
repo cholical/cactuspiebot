@@ -37,23 +37,12 @@ bot.on('ready', function (event) {
             var botPort = port + 1 + i;
             var cmd = 'node ' + botsAvailable[i] + ' ' + botPort;
             console.log(cmd);
-<<<<<<< HEAD
-    	    var childProcess = exec(cmd, function (err, stdout, stderr) {
-        		if (err) {
-        		    console.log(cmd);
-        		    console.log(err);
-        		}
-    	    });
-            childProcesses.push(childProcess);
-=======
             var childProcess = exec(cmd, function (err, stdout, stderr) {
                 if (err) {
                     console.log(cmd);
                     console.log(err);
                 }
-            });
->>>>>>> b8dd65e43295ce66ccfb93a716ac5dd578ae8dd7
-            childProcess.stdout.pipe(process.stdout);
+;            childProcess.stdout.pipe(process.stdout);
         } catch (err) {
             console.log(err);
         }
