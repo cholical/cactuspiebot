@@ -8,7 +8,7 @@ var zerorpc = require("zerorpc");
 
 var discordApi = 'https://discordapp.com/api/';
 
-var channels = [110114161098248192, 220307845483069440];
+var channels = [220307845483069440, 110114161098248192];
 
 var bot = new Discord.Client({
     token: auth.token,
@@ -38,7 +38,7 @@ bot.on('ready', function (event) {
 
     var log = fs.openSync('messages.txt', 'w');
     var counter = 0;
-    for (int i = 0; i < channels.length; i++) {
+    for (var i = 0; i < channels.length; i++) {
         options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
         while (true) {
             var res = sync('get', options.url, options);
