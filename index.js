@@ -8,7 +8,7 @@ var zerorpc = require("zerorpc");
 
 var discordApi = 'https://discordapp.com/api/';
 
-var dataStore = '/markovgen/corpora/';
+var dataStore = 'markovgen/corpora/';
 
 var channels = ["220307845483069440", "110114161098248192"];
 
