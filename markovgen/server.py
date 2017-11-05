@@ -5,15 +5,17 @@ import zerorpc
 port = 8000
 host = "127.0.0.1"
 modelDirectory = "models" # specify a path relative to this script's location
+corporaDirectory = "corpora" # specify a relative path to corpora files
 scriptDir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 # server class with relevant methods for markov chain generation
 class MarkovGen(object):
-	def __init__(self, directory = "models"):
+	def __init__(self, modelDir = "models", corporaDir = "corpora"):
 		self.modelList = []
-		self.directory = directory
+		self.modelDir = modelDir
+		self.corporaDir = corporaDir
 
-		dirPath = os.path.join(scriptDir,self.directory)
+		dirPath = os.path.join(scriptDir,self.modelDir)
 		if not os.path.exists(dirPath):
     		os.makedirs(dirPath)
     	else:
@@ -27,7 +29,7 @@ class MarkovGen(object):
 
     def getModelPath(self, modelUID):
     	''' Returns the absolute file path for a given model unique id'''
-    	return os.path.join(scriptDir, self.directory + "/" + str(modelUID) + ".json")
+    	return os.path.join(scriptDir, self.modelDir + "/" + str(modelUID) + ".json")
 
     def writeModel(self, modelUID, model):
     	''' writes a model to a file specified with modelUID '''
@@ -52,7 +54,8 @@ class MarkovGen(object):
     	with the same modelUID, the corpora from filename will be combined with 
     	the existing model (so don't pass in files as corpora that have overlapping content)
     	'''
-    	with open(filename) as f:
+		filePath = os.path.join(scriptDir,self.corporaDir + "/" + str(filename))
+    	with open(filePath) as f:
     		text = f.read()
 
     	model = POSifiedText(text)
@@ -93,7 +96,7 @@ class MarkovGen(object):
 
 # start server
 def main(host, port):
-    s = zerorpc.Server(MarkovGen())
+    s = zerorpc.Server(MarkovGen(modelDirectory, corporaDirectory))
     s.bind("tcp://%s:%i" % (host, port))
     s.run()
     print("MarkovGen server started at %s:%i." % (host, port))
