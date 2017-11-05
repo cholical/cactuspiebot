@@ -50,7 +50,7 @@ bot.on('ready', function (event) {
                 fs.writeSync(log, line);
             });
             if (messages.length > 0) {
-                options.url = discordApi + 'channels/' + channels[i] + '/messages?before' + messages[messages.length - 1].id + '&limit=100';
+                options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
             } else {
                 break;
             }
