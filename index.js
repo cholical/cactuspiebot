@@ -33,20 +33,25 @@ bot.on('ready', function (event) {
     var messages = [];
 
     var log = fs.openSync('messages.txt', 'w');
+    var counter = 1;
 
-    do {
+    while (true) {
         var res = sync('get', options.url, options);
         messages = JSON.parse(res.getBody().toString());
-        //console.log(res.getBody().toString());
+        counter++;
         console.log("GET " + messages.length + " messages");
         _.forEach(messages, function (message) {
             var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
             fs.writeSync(log, line);
-            //console.log(message.content);
         });
-        options.url = 'https://discordapp.com/api/channels/220307845483069440/messages?before=' + messages[messages.length - 1].id + '&limit=100';
-    } while (messages.length > 0);
-
+        if (messages.length > 0) {
+            options.url = 'https://discordapp.com/api/channels/220307845483069440/messages?before=' + messages[messages.length - 1].id + '&limit=100';
+        } else {
+            break;
+        }
+    }
+        
+    
     fs.closeSync(log);
 });
 
