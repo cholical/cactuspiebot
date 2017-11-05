@@ -22,6 +22,7 @@ var port = 8000;
 var client = new zerorpc.Client();
 client.connect("tcp://" + host + ":" + port);
 
+/*
 bot.on('ready', function (event) {
     console.log('Connected');
     console.log('Logged in as: ');
@@ -68,7 +69,7 @@ bot.on('ready', function (event) {
             }
         }
     }
-    
+
     for (var property in writers) {
         if (writers.hasOwnProperty(property)) {
             fs.closeSync(writers[property]);
@@ -81,7 +82,7 @@ bot.on('ready', function (event) {
     })
 
 });
-
+*/
 bot.on('message', function (user, userID, channelID, message, event) {
     if (message.substring(0, 1) == '!') {
         var args = message.substring(1).split(' ');
