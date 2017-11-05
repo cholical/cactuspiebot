@@ -6,6 +6,10 @@ var _ = require('lodash');
 var auth = require('./auth.json');
 var zerorpc = require("zerorpc");
 
+var discordApi = 'https://discordapp.com/api/';
+
+var channels = [110114161098248192, 220307845483069440];
+
 var bot = new Discord.Client({
     token: auth.token,
     autorun: true
@@ -22,7 +26,7 @@ bot.on('ready', function (event) {
     console.log(bot.username + ' - ' + bot.id);
 
     var options = {
-        url: 'https://discordapp.com/api/channels/220307845483069440/messages?limit=100',
+        url: "",
         headers: {
             'User-Agent':'request',
             'Authorization': bot.internals.token,
@@ -33,25 +37,26 @@ bot.on('ready', function (event) {
     var messages = [];
 
     var log = fs.openSync('messages.txt', 'w');
-    var counter = 1;
-
-    while (true) {
-        var res = sync('get', options.url, options);
-        messages = JSON.parse(res.getBody().toString());
-        console.log("GET " + messages.length + " messages: " + counter + "00 messages!");
-        counter++;
-        _.forEach(messages, function (message) {
-            var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
-            fs.writeSync(log, line);
-        });
-        if (messages.length > 0) {
-            options.url = 'https://discordapp.com/api/channels/220307845483069440/messages?before=' + messages[messages.length - 1].id + '&limit=100';
-        } else {
-            break;
+    var counter = 0;
+    for (int i = 0; i < channels.length; i++) {
+        options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
+        while (true) {
+            var res = sync('get', options.url, options);
+            messages = JSON.parse(res.getBody().toString());
+            counter += messages.length;
+            console.log("GET " + messages.length + " messages: " + counter + "!");
+            _.forEach(messages, function (message) {
+                var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
+                fs.writeSync(log, line);
+            });
+            if (messages.length > 0) {
+                options.url = discordApi + 'channels/' + channels.publicChannel + '/messages?before' + messages[messages.length - 1].id + '&limit=100';
+            } else {
+                break;
+            }
         }
     }
         
-    
     fs.closeSync(log);
 });
 
