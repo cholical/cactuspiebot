@@ -15,6 +15,8 @@ var dataStore = 'markovgen/corpora/';
 var channels = ["110114161098248192"];
 
 var childProcesses = [];
+var botIds = [];
+var botToAuthor = {};  //obj that maps bot ids to their corresponding author
 
 var bot = new Discord.Client({
     token: auth.token,
@@ -42,8 +44,8 @@ bot.on('ready', function (event) {
                     console.log(cmd);
                     console.log(err);
                 }
-            });            
-            childProcesses.add(childProcess);
+            });
+            childProcesses.push(childProcess);
             childProcess.stdout.pipe(process.stdout);
 
         } catch (err) {
@@ -64,9 +66,32 @@ bot.on('ready', function (event) {
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
+    //if message mentions a bot, query that bot and send result as message
+    var mentionId = getMentionId(message);
+    if (mentionId != ""){
+        if (botIds.includes(mentionId)) {
+            //query that bot
+            client.invoke("readModel", botToAuthor[mentionId], 1, function(error, res, more) {
+                console.log(res);
+                bot.sendMessage({
+                    to: channelID,
+                    message: res[0]
+                });
+            });
+        }
+    }
+    // hhandle normal commands
     if (message.substring(0, 1) == '!') {
         var args = message.substring(1).split(' ');
         var cmd = args[0];
+        var modelUID = "71716577669550080"; //default to mac
+        if (args[1] != undefined) {
+            modelUID = getMentionId(args[1]);
+            if (botIds.includes(modelUID)){
+                //need to map this id to an actual author id
+                modelUID = botToAuthor[modelUID];
+            } // otherwise, this is directly mentioning an author
+        }
         switch (cmd) {
             case 'test':
                 //invokes the function hello with the param "RPC" on the python server
@@ -80,9 +105,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
                 break;
             case 'build':
-                var author = "71716577669550080";
-
-                client.invoke("createModel", author + ".txt", author, function(error, res, more) {
+                client.invoke("createModel", modelUID + ".txt", modelUID, function(error, res, more) {
                     console.log(res);
                     bot.sendMessage({
                         to: channelID,
@@ -92,18 +115,14 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
                 break;
             case 'query':
-                var author = "71716577669550080";
-
-                client.invoke("readModel", author, 1, function(error, res, more) {
+                client.invoke("readModel", modelUID, 1, function(error, res, more) {
                     console.log(res);
                     bot.sendMessage({
                         to: channelID,
                         message: res[0]
                     });
                 });
-
                 break;
-
         }
     }
 });
@@ -128,20 +147,20 @@ function fetchText(options,channels){
             counter += messages.length;
             console.log("GET " + messages.length + " messages: " + counter + "!");
 
-            _.forEach(messages, function (message) {
+            _.forEachRight(messages, function (message) {
+                // messages are in newset to oldest, so we reverse the loop to put oldest at the beginning of the file
                 if (writers[message.author.id] == undefined) {
                     writers[message.author.id] = fs.openSync(dataStore + message.author.id + '.txt', 'w');
                     authors.push(message.author)
                 }
-                console.log(message.timestamp + ' : ' + message.content)
                 //split current line on sentences based on punctuation followed by at least one space
                 var lines = message.content.replace(/([.?!])\s+(?=[a-zA-Z\d])/g, "$1|").split("|")
-                _.forEach(lines, function(line){
+                _.forEachRight(lines, function(line){
                     //for each sentence, write it as a new line
-                    fs.writeSync(writers[message.author.id], message.timestamp + ' : ' + line + '\n');
+                    fs.writeSync(writers[message.author.id], line + '\n');
                 });
             });
-            break;
+
             if (messages.length > 0) {
                 lastMsgId = messages[0].id;
                 //options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
@@ -152,8 +171,11 @@ function fetchText(options,channels){
             }
         }
     }
-    fp = fs.openSync('latest.json', 'w');
-    fs.writeSync(fp, JSON.stringify(latestMessages));
+
+    if (latestMessages != undefined){
+        fp = fs.openSync('latest.json', 'w');
+        fs.writeSync(fp, JSON.stringify(latestMessages));
+    }
 
     for (var property in writers) {
         if (writers.hasOwnProperty(property)) {
@@ -163,13 +185,22 @@ function fetchText(options,channels){
 
     console.log("Author map")
     _.forEach(authors, function(author) {
-    	console.log("Author map")
-    	console.log(author.id, author.username)
+        console.log(author.id, author.username)
     });
 
 
 }
 
+function getMentionId(string){
+    //get first mention
+    var regex = /<@!?[^&](\d+)>/g;
+    var match = regex.exec(string);
+    var mentionId = "";
+    if (match != null) {
+        mentionId = match[1];
+    }
+    return mentionId;
+}
 
 process.on('exit', function () {
     console.log('Killing all child processes');

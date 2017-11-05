@@ -44,7 +44,7 @@ class MarkovGen(object):
     def loadModel(self, modelUID):
         ''' loads a model from file and returns it given a modelUID '''
         if modelUID not in self.modelList:
-            return "Model doesn't exist."
+            return "Could not find model for " + str(modelUID) + "."
         with open(self.getModelPath(modelUID), "r") as infile:
             modelJSON = infile.read()
         return POSifiedText.from_json(modelJSON)
@@ -82,6 +82,8 @@ class MarkovGen(object):
                 - test_output: boolean to toggle preventing overlap or not
         '''
         model = self.loadModel(modelUID)
+        if type(model) is String:
+            return [model]
         sents = []
 
         # determine which funciton to use
