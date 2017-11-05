@@ -11,8 +11,8 @@ var discordApi = 'https://discordapp.com/api/';
 
 var dataStore = 'markovgen/corpora/';
 
-//var channels = ["220307845483069440", "110114161098248192"];
-var channels = ["110114161098248192"];
+var channels = ["220307845483069440", "110114161098248192"];
+//var channels = ["110114161098248192"];
 
 var childProcesses = [];
 var botIds = [];
@@ -62,7 +62,7 @@ bot.on('ready', function (event) {
         }
     }
 
-    fetchText(options, channels);
+    //fetchText(options, channels);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
