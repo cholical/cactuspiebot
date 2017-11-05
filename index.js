@@ -38,7 +38,7 @@ bot.on('ready', function (event) {
 	do {
 		var res = sync('get', options.url, options);
 		console.log(res);
-		messages = JSON.parse(res.getBody('utf8'));
+		messages = JSON.parse(res.getBody().toString());
 		_.forEach(messages, function (message) {
 			var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
 			fs.appendFile('messages.txt', line);
