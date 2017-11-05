@@ -13,10 +13,7 @@
     "discord.io": "^2.5.3",
     "lodash": "^4.17.4",
     "request": "^2.83.0",
-<<<<<<< HEAD
-    "sync-request": "^4.1.0"
-=======
+    "sync-request": "^4.1.0",
     "zerorpc": "^0.9.7"
->>>>>>> d3030fc6a8d0ce7ffc5c13e73acabaf5d4906584
   }
 }
