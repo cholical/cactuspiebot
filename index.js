@@ -8,7 +8,7 @@ var zerorpc = require("zerorpc");
 
 var discordApi = 'https://discordapp.com/api/';
 
-var channels = [220307845483069440, 110114161098248192];
+var channels = [110114161098248192, 220307845483069440];
 
 var bot = new Discord.Client({
     token: auth.token,
