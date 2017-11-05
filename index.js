@@ -8,6 +8,8 @@ var zerorpc = require("zerorpc");
 
 var discordApi = 'https://discordapp.com/api/';
 
+var dataStore = '/markovgen/corpora/';
+
 var channels = ["220307845483069440", "110114161098248192"];
 
 var bot = new Discord.Client({
@@ -35,8 +37,8 @@ bot.on('ready', function (event) {
     }
 
     var messages = [];
+    var writers = {};
 
-    var log = fs.openSync('messages.txt', 'w');
     var counter = 0;
     for (var i = 0; i < channels.length; i++) {
         options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
@@ -47,8 +49,12 @@ bot.on('ready', function (event) {
             counter += messages.length;
             console.log("GET " + messages.length + " messages: " + counter + "!");
             _.forEach(messages, function (message) {
-                var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
-                fs.writeSync(log, line);
+                if (writers[message.author.id] == undefined) {
+                    writers[message.author.id] = fs.openSync(dataStore + message.author.id + '.txt', 'w');
+
+                }
+                var line = message.author.id + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
+                fs.writeSync(writers[message.author.id], line);
             });
             if (messages.length > 0) {
                 options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
@@ -57,8 +63,13 @@ bot.on('ready', function (event) {
             }
         }
     }
-        
-    fs.closeSync(log);
+    
+    for (var property in writers) {
+        if (writers.hasOwnProperty(property)) {
+            fs.closeSync(writers[property]);
+        }
+    }
+
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
