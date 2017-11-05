@@ -4,7 +4,6 @@ var sync = require('sync-request');
 var fs = require('fs');
 var _ = require('lodash');
 var auth = require('./auth.json');
-var latestMessages = require('./latest.json');
 var zerorpc = require("zerorpc");
 var exec = require('child_process').exec;
 
@@ -12,7 +11,8 @@ var discordApi = 'https://discordapp.com/api/';
 
 var dataStore = 'markovgen/corpora/';
 
-var channels = ["220307845483069440", "110114161098248192"];
+//var channels = ["220307845483069440", "110114161098248192"];
+var channels = ["110114161098248192"];
 
 var bot = new Discord.Client({
     token: auth.token,
@@ -35,12 +35,12 @@ bot.on('ready', function (event) {
             var botPort = port + 1 + i;
             var cmd = 'node ' + botsAvailable[i] + ' ' + botPort;
             console.log(cmd);
-	    var childProcess = exec(cmd, function (err, stdout, stderr) {
-		if (err) {
-		    console.log(cmd);
-		    console.log(err);
-		}
-	    });
+            var childProcess = exec(cmd, function (err, stdout, stderr) {
+                if (err) {
+                    console.log(cmd);
+                    console.log(err);
+                }
+            });
             childProcess.stdout.pipe(process.stdout);
         } catch (err) {
             console.log(err);
@@ -56,7 +56,7 @@ bot.on('ready', function (event) {
         }
     }
 
-    //fetchText(options, channels);
+    fetchText(options, channels);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
@@ -76,9 +76,9 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
                 break;
             case 'build':
-            	var author = "71716577669550080";
+                var author = "71716577669550080";
 
-            	client.invoke("createModel", author + ".txt", author, function(error, res, more) {
+                client.invoke("createModel", author + ".txt", author, function(error, res, more) {
                     console.log(res);
                     bot.sendMessage({
                         to: channelID,
@@ -88,17 +88,17 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
                 break;
             case 'query':
-	            var author = "71716577669550080";
+                var author = "71716577669550080";
 
-	            client.invoke("readModel", author, 1, function(error, res, more) {
-	            	console.log(res);
-	            	bot.sendMessage({
-	            		to: channelID,
-	            		message: res[0]
-	            	});
-	            });
+                client.invoke("readModel", author, 1, function(error, res, more) {
+                    console.log(res);
+                    bot.sendMessage({
+                        to: channelID,
+                        message: res[0]
+                    });
+                });
 
-	            break;
+                break;
 
         }
     }
@@ -107,13 +107,16 @@ bot.on('message', function (user, userID, channelID, message, event) {
 function fetchText(options,channels){
 
     var messages = [];
+    var lastMsgId;
     var writers = {};
     var authors = [];
     var firstTime = true;
+    var latestMessages = require('./latest.json'); // { channel: latest message id}
 
     var counter = 0;
     for (var i = 0; i < channels.length; i++) {
-        options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
+        options.url = discordApi + 'channels/' + channels[i] + '/messages?after=' + latestMessages[channels[i]] + '&limit=100';
+        //options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
         console.log(options.url);
         while (true) {
             var res = sync('get', options.url, options);
@@ -126,20 +129,27 @@ function fetchText(options,channels){
                     writers[message.author.id] = fs.openSync(dataStore + message.author.id + '.txt', 'w');
                     authors.push(message.author)
                 }
+                console.log(message.timestamp + ' : ' + message.content)
                 //split current line on sentences based on punctuation followed by at least one space
-     			var lines = message.content.replace(/([.?!])\s+(?=[a-zA-Z\d])/g, "$1|").split("|")
-     			_.forEach(lines, function(line){
-     				//for each sentence, write it as a new line
-                	fs.writeSync(writers[message.author.id], line + '\n');
-     			});
+                var lines = message.content.replace(/([.?!])\s+(?=[a-zA-Z\d])/g, "$1|").split("|")
+                _.forEach(lines, function(line){
+                    //for each sentence, write it as a new line
+                    fs.writeSync(writers[message.author.id], message.timestamp + ' : ' + line + '\n');
+                });
             });
+            break;
             if (messages.length > 0) {
-                options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
+                lastMsgId = messages[0].id;
+                //options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
+                options.url = discordApi + 'channels/' + channels[i] + '/messages?after=' + lastMsgId + '&limit=100';
             } else {
+                latestMessages[channels[i]] = lastMsgId;
                 break;
             }
         }
     }
+    fp = fs.openSync('latest.json', 'w');
+    fs.writeSync(fp, JSON.stringify(latestMessages));
 
     for (var property in writers) {
         if (writers.hasOwnProperty(property)) {
@@ -147,9 +157,9 @@ function fetchText(options,channels){
         }
     }
 
+    console.log("Author map")
     _.forEach(authors, function(author) {
-    	console.log("Author map")
-    	console.log(author.id, author.username)
+        console.log(author.id, author.username)
     })
 
 
