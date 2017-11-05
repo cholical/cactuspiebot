@@ -75,10 +75,10 @@ bot.on('ready', function (event) {
         }
     }
 
-    for (var author in authors) {
+    _.forEach(authors, function(author) {
     	console.log("Author map")
     	console.log(author.id, author.username)
-    }
+    })
 
 });
 
@@ -99,6 +99,31 @@ bot.on('message', function (user, userID, channelID, message, event) {
                 });
 
                 break;
+            case 'build':
+            	var author = "71716577669550080";
+
+            	client.invoke("createModel", author + ".txt", author, function(error, res, more) {
+                    console.log(res);
+                    bot.sendMessage({
+                        to: channelID,
+                        message: 'Model ' + author + ' created.'
+                    });
+                });
+
+                break;
+            case 'query':
+	            var author = "71716577669550080";
+
+	            client.invoke("readModel", author, 1, function(error, res, more) {
+	            	console.log(res);
+	            	bot.sendMessage({
+	            		to: channelID,
+	            		message: res[0]
+	            	});
+	            });
+
+	            break;
+
         }
     }
 });
