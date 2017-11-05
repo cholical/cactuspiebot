@@ -38,6 +38,7 @@ bot.on('ready', function (event) {
 
     var messages = [];
     var writers = {};
+    var authors = [];
 
     var counter = 0;
     for (var i = 0; i < channels.length; i++) {
@@ -51,10 +52,14 @@ bot.on('ready', function (event) {
             _.forEach(messages, function (message) {
                 if (writers[message.author.id] == undefined) {
                     writers[message.author.id] = fs.openSync(dataStore + message.author.id + '.txt', 'w');
-
+                    authors.push(message.author)
                 }
-                var line = message.author.id + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
-                fs.writeSync(writers[message.author.id], line);
+                //split current line on sentences based on punctuation followed by at least one space
+     			var lines = message.content.replace(/([.?!])\s+(?=[a-zA-Z\d])/g, "$1|").split("|")
+     			_.forEach(lines, function(line){
+     				//for each sentence, write it as a new line
+                	fs.writeSync(writers[message.author.id], line + '\n');
+     			});
             });
             if (messages.length > 0) {
                 options.url = discordApi + 'channels/' + channels[i] + '/messages?before=' + messages[messages.length - 1].id + '&limit=100';
@@ -68,6 +73,11 @@ bot.on('ready', function (event) {
         if (writers.hasOwnProperty(property)) {
             fs.closeSync(writers[property]);
         }
+    }
+
+    for (var author in authors) {
+    	console.log("Author map")
+    	console.log(author.id, author.username)
     }
 
 });
