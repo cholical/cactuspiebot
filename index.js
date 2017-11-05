@@ -40,6 +40,7 @@ bot.on('ready', function (event) {
     var counter = 0;
     for (var i = 0; i < channels.length; i++) {
         options.url = discordApi + 'channels/' + channels[i] + '/messages?limit=100';
+        console.log(options.url);
         while (true) {
             var res = sync('get', options.url, options);
             messages = JSON.parse(res.getBody().toString());
