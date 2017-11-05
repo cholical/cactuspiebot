@@ -42,7 +42,10 @@ bot.on('ready', function (event) {
                     console.log(cmd);
                     console.log(err);
                 }
-;            childProcess.stdout.pipe(process.stdout);
+            });            
+            childProcesses.add(childProcess);
+            childProcess.stdout.pipe(process.stdout);
+
         } catch (err) {
             console.log(err);
         }
