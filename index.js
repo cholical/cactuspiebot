@@ -35,6 +35,8 @@ bot.on('ready', function (event) {
     var firstTime = true;
     var done = true;
 
+    var wstream = fs.createWriteStream('messages.txt');
+
     do {
         var res = sync('get', options.url, options);
         messages = JSON.parse(res.getBody().toString());
@@ -42,11 +44,13 @@ bot.on('ready', function (event) {
         console.log("GET " + messages.length + " messages");
         _.forEach(messages, function (message) {
             var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
-            fs.appendFile('messages.txt', line);
+            wstream.write(line);
             //console.log(message.content);
         });
         options.url = 'https://discordapp.com/api/channels/220307845483069440/messages?before=' + messages[messages.length - 1].id + '&limit=100';
     } while (messages.length > 0);
+
+    wstream.end();
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
