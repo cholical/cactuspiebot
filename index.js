@@ -34,7 +34,8 @@ bot.on('ready', function (event) {
         try {
             var botPort = port + 1 + i;
             var cmd = 'node ' + botsAvailable[i] + ' ' + botPort;
-            exec(cmd);
+            var childProcess = exec(cmd);
+            childProcess.stdout.pipe(process.stdout);
         } catch (err) {
             console.log(err);
         }
