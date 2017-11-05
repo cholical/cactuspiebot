@@ -16,7 +16,6 @@ var port = 8000;
 var client = new zerorpc.Client();
 client.connect("tcp://" + host + ":" + port);
 
-
 bot.on('ready', function (event) {
     console.log('Connected');
     console.log('Logged in as: ');
@@ -32,10 +31,8 @@ bot.on('ready', function (event) {
     }
 
     var messages = [];
-    var firstTime = true;
-    var done = true;
 
-    var wstream = fs.createWriteStream('messages.txt');
+    var log = fs.openSync('messages.txt', 'w');
 
     do {
         var res = sync('get', options.url, options);
@@ -44,13 +41,13 @@ bot.on('ready', function (event) {
         console.log("GET " + messages.length + " messages");
         _.forEach(messages, function (message) {
             var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
-            wstream.write(line);
+            fs.writeSync(log, line);
             //console.log(message.content);
         });
         options.url = 'https://discordapp.com/api/channels/220307845483069440/messages?before=' + messages[messages.length - 1].id + '&limit=100';
     } while (messages.length > 0);
 
-    wstream.end();
+    fs.closeSync(log);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
