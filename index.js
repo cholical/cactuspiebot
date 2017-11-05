@@ -14,6 +14,8 @@ var dataStore = 'markovgen/corpora/';
 
 var channels = ["220307845483069440", "110114161098248192"];
 
+var childProcesses = [];
+
 var bot = new Discord.Client({
     token: auth.token,
     autorun: true
@@ -35,12 +37,13 @@ bot.on('ready', function (event) {
             var botPort = port + 1 + i;
             var cmd = 'node ' + botsAvailable[i] + ' ' + botPort;
             console.log(cmd);
-	    var childProcess = exec(cmd, function (err, stdout, stderr) {
-		if (err) {
-		    console.log(cmd);
-		    console.log(err);
-		}
-	    });
+    	    var childProcess = exec(cmd, function (err, stdout, stderr) {
+        		if (err) {
+        		    console.log(cmd);
+        		    console.log(err);
+        		}
+    	    });
+            childProcesses.push(childProcess);
             childProcess.stdout.pipe(process.stdout);
         } catch (err) {
             console.log(err);
@@ -150,7 +153,15 @@ function fetchText(options,channels){
     _.forEach(authors, function(author) {
     	console.log("Author map")
     	console.log(author.id, author.username)
-    })
+    });
 
 
 }
+
+
+process.on('exit', function () {
+    console.log('Killing all child processes');
+    for (var i = 0; i < childProcesses.length; i++) {
+        childProcesses[i].kill();
+    }
+});
