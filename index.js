@@ -6,6 +6,7 @@ var _ = require('lodash');
 var auth = require('./auth.json');
 var latestMessages = require('./latest.json');
 var zerorpc = require("zerorpc");
+var exec = require('child_process').exec;
 
 var discordApi = 'https://discordapp.com/api/';
 
@@ -28,6 +29,17 @@ bot.on('ready', function (event) {
     console.log('Logged in as: ');
     console.log(bot.username + ' - ' + bot.id);
 
+    var botsAvailable = ['ronald-bot.js', 'mac-bot.js', 'keenan-bot.js', 'asher-bot.js', 'ben-bot.js'];
+    for (var i = 0; i < botsAvailable.length; i++) {
+        try {
+            var botPort = port + 1 + i;
+            var cmd = 'node ' + botsAvailable[i] + ' ' + botPort;
+            exec(cmd);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     var options = {
         url: "",
         headers: {
@@ -37,7 +49,7 @@ bot.on('ready', function (event) {
         }
     }
 
-    fetchText(options, channels);
+    //fetchText(options, channels);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
