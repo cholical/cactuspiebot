@@ -38,8 +38,8 @@ bot.on('ready', function (event) {
     while (true) {
         var res = sync('get', options.url, options);
         messages = JSON.parse(res.getBody().toString());
+        console.log("GET " + messages.length + " messages: " + counter + "00 messages!");
         counter++;
-        console.log("GET " + messages.length + " messages");
         _.forEach(messages, function (message) {
             var line = message.author.username + ' (' + message.timestamp + ') ' + ': ' + message.content + '\n';
             fs.writeSync(log, line);
