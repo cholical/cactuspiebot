@@ -118,9 +118,14 @@ bot.on('message', function (user, userID, channelID, message, event) {
             case 'query':
                 client.invoke("readModel", modelUID, 1, function(error, res, more) {
                     console.log(res);
-                    bot.sendMessage({
-                        to: channelID,
-                        message: res[0]
+                    request.post('localhost:8001/message', {
+                        form: {
+                            message: res[0]
+                        }
+                    }, function (err, httpResponse, body) {
+                        if (err) {
+                            console.log(err);
+                        }
                     });
                 });
                 break;
