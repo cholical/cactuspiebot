@@ -6,8 +6,6 @@ var app = express();
 var port = parseInt(process.argv[2]);
 var botauth = require('./botauth.json');
 
-var channelID = '376604648863170560';
-
 var bot = new Discord.Client({
     token: botauth.asherToken,
     autorun: true
@@ -27,11 +25,12 @@ app.use(bodyParser.json());
 
 app.post('/message', function (req, res) {
 	var message = req.body.message;
-	bot.sendMessage({
+    var channelID = req.body.channelID;
+    bot.sendMessage({
         to: channelID,
         message: message
     });
-	res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 app.listen(port, function () {

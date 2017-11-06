@@ -130,6 +130,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
                     console.log(res);
                     request.post('http://127.0.0.1:8001/message', {
                         form: {
+                            channelID: channelID,
                             message: res[0]
                         }
                     }, function (err, httpResponse, body) {

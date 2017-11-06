@@ -6,8 +6,6 @@ var app = express();
 var port = parseInt(process.argv[2]);
 var botauth = require('./botauth.json');
 
-var channelID = '376604648863170560';
-
 var bot = new Discord.Client({
     token: botauth.ronaldToken,
     autorun: true
@@ -27,6 +25,7 @@ app.use(bodyParser.json());
 
 app.post('/message', function (req, res) {
 	var message = req.body.message;
+    var channelID = req.body.channelID;
 	bot.sendMessage({
         to: channelID,
         message: message
