@@ -71,7 +71,7 @@ bot.on('ready', function (event) {
         }
     }
 
-    //fetchText(options, channels);
+    fetchText(options, channels);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
@@ -194,7 +194,7 @@ function fetchText(options,channels){
         }
     }
 
-    if (latestMessages != undefined){
+    if (!isEmptyObject(latestMessages)){
         fp = fs.openSync('latest.json', 'w');
         fs.writeSync(fp, JSON.stringify(latestMessages));
     }
@@ -234,7 +234,14 @@ function getBot(modelUID) {
     }
     return null
 }
-
+function isEmptyObject(obj) {
+    for(var prop in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+            return false;
+        }
+    }
+    return true;
+}
 process.on('exit', function () {
     console.log('Killing all child processes');
     for (var i = 0; i < childProcesses.length; i++) {
