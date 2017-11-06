@@ -82,7 +82,7 @@ class MarkovGen(object):
                 - test_output: boolean to toggle preventing overlap or not
         '''
         model = self.loadModel(modelUID)
-        if type(model) is String:
+        if type(model) is str:
             return [model]
         sents = []
 

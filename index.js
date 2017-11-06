@@ -87,6 +87,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
         var modelUID = "71716577669550080"; //default to mac
         if (args[1] != undefined) {
             modelUID = getMentionId(args[1]);
+            console.log("model id found", modelUID, args[1], message);
             if (botIds.includes(modelUID)){
                 //need to map this id to an actual author id
                 modelUID = botToAuthor[modelUID];
@@ -109,7 +110,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
                     console.log(res);
                     bot.sendMessage({
                         to: channelID,
-                        message: 'Model ' + author + ' created.'
+                        message: 'Model ' + modelUID + ' created.'
                     });
                 });
 
@@ -193,7 +194,7 @@ function fetchText(options,channels){
 
 function getMentionId(string){
     //get first mention
-    var regex = /<@!?[^&](\d+)>/g;
+    var regex = /<@!?(\d+)>/g;
     var match = regex.exec(string);
     var mentionId = "";
     if (match != null) {
