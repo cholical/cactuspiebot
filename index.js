@@ -56,7 +56,7 @@ bot.on('ready', function (event) {
     }
 
     var pyCmd = 'python3 markovgen/server.py';
-    pythonProcess = exec(cmd, function (err, stdout, stderr) {
+    pythonProcess = exec(pyCmd, function (err, stdout, stderr) {
         if (err) {
             console.log(cmd);
             console.log(err);
