@@ -28,6 +28,8 @@ var port = 8000;
 var client = new zerorpc.Client();
 client.connect("tcp://" + host + ":" + port);
 
+var pythonProcess;
+
 bot.on('ready', function (event) {
     console.log('Connected');
     console.log('Logged in as: ');
@@ -52,6 +54,14 @@ bot.on('ready', function (event) {
             console.log(err);
         }
     }
+
+    var pyCmd = 'python3 markovgen/server.py';
+    pythonProcess = exec(cmd, function (err, stdout, stderr) {
+        if (err) {
+            console.log(cmd);
+            console.log(err);
+        }
+    });
 
     var options = {
         url: "",
@@ -213,4 +223,5 @@ process.on('exit', function () {
     for (var i = 0; i < childProcesses.length; i++) {
         childProcesses[i].kill();
     }
+    pythonProcess.kill();
 });
