@@ -128,7 +128,7 @@ bot.on('message', function (user, userID, channelID, message, event) {
             case 'query':
                 client.invoke("readModel", modelUID, 1, function(error, res, more) {
                     console.log(res);
-                    request.post('localhost:8001/message', {
+                    request.post('http://127.0.0.1:8001/message', {
                         form: {
                             message: res[0]
                         }
