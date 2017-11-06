@@ -27,7 +27,7 @@ app.post('/message', function (req, res) {
 	var message = req.body.message;
     var channelID = req.body.channelID;
     var chance = Math.floor(Math.random() * 10);
-    if (chance > 2) {
+    if (chance < 2) {
         message = "Fuck you.";
     }
 	bot.sendMessage({
