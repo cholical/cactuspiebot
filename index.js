@@ -71,7 +71,7 @@ bot.on('ready', function (event) {
         }
     }
 
-    fetchText(options, channels);
+    //fetchText(options, channels);
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
